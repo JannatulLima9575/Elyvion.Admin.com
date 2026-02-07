@@ -168,7 +168,7 @@ const CustomerManagement = () => {
       <div className="flex justify-end p-4 border-b border-gray-200">
         <button 
           onClick={() => setIsCreateModalOpen(true)}
-          className="px-6 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#6d28d9] transition-colors whitespace-nowrap">
+          className="px-6 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#007aff] transition-colors whitespace-nowrap">
           {t('createCustomer')}
         </button>
       </div>
@@ -198,7 +198,7 @@ const CustomerManagement = () => {
       <div className="p-4 md:p-6 border-b border-gray-200">
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <label className="text-sm font-medium text-red-500 whitespace-nowrap">*{t('createdDate')} :</label>
+            <label className="text-sm font-medium text-gray-600 whitespace-nowrap">*{t('createdDate')} :</label>
             <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
               <input
                 type="date"
@@ -282,7 +282,7 @@ const CustomerManagement = () => {
           <button 
             onClick={handleFilter}
             disabled={loading}
-            className="px-16 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#6d28d9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            className="px-16 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#007aff] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             {loading ? t('loading') || 'Loading...' : t('filter')}
           </button>
         </div>
