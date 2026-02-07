@@ -1,0 +1,62 @@
+[
+    {
+        "id": 1,
+        "name": "Deposit",
+        "active": true
+    },
+    {
+        "id": 2,
+        "name": "Withdrawal",
+        "active": true
+    },
+    {
+        "id": 3,
+        "name": "Adjustment",
+        "active": true
+    },
+    {
+        "id": 4,
+        "name": "Registration Bonus",
+        "active": true
+    },
+    {
+        "id": 5,
+        "name": "Negative Adjustment",
+        "active": true
+    },
+    {
+        "id": 6,
+        "name": "Launch Task",
+        "active": true
+    },
+    {
+        "id": 7,
+        "name": "Refund Task With Profit",
+        "active": true
+    },
+    {
+        "id": 8,
+        "name": "Assessment Bonus",
+        "active": true
+    },
+    {
+        "id": 9,
+        "name": "Check In Bonus",
+        "active": true
+    },
+    {
+        "id": 10,
+        "name": "Withdrawal Rejection",
+        "active": true
+    },
+    {
+        "id": 11,
+        "name": "Task Profit",
+        "active": true
+    },
+    {
+        "id": 12,
+        "name": "Golden Egg",
+        "active": true
+    }
+]

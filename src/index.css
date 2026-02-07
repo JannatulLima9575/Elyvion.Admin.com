@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#6d28d9] transition-colors;
+  }
+  
+  .btn-success {
+    @apply px-6 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors;
+  }
+  
+  .btn-danger {
+    @apply px-6 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors;
+  }
+  
+  .input-field {
+    @apply border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed];
+  }
+}
+
+/* Custom scrollbar */
+
+
+
+.scroll-arrow::-webkit-scrollbar {
+  width: 5px;
+  height: 8px;
+}
+
+.scroll-arrow::-webkit-scrollbar-track {
+  background: white;
+  border-radius: 4px;
+}
+
+.scroll-arrow::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.scroll-arrow::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+} 
