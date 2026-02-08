@@ -61,7 +61,7 @@ const MasterDataManagement = () => {
 
                 {/* Action Button */}
                 <td className="px-6 py-4 text-right">
-                  <button className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-semibold py-3 px-6 rounded-md shadow transition-colors leading-tight">
+                  <button className="bg-[#7c3aed] hover:bg-[#34aadc] text-white text-xs font-semibold py-3 px-6 rounded-md shadow transition-colors leading-tight">
                     Confirm Update <br /> Amount
                   </button>
                 </td>

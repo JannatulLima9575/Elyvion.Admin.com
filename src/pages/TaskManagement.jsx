@@ -77,151 +77,113 @@ const TaskManagement = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div className="min-h-screen pb-10">
       {/* Header with Create Button */}
-      <div className="flex justify-end p-4 border-b border-gray-200">
+      <div className="flex justify-end p-6">
         <button 
           onClick={() => setIsCreateModalOpen(true)}
-          className="px-6 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#6d28d9] transition-colors">
-          {t('createProduct')}
+          className="px-4 py-2 bg-[#6d28d9] text-white rounded-md text-sm font-medium hover:bg-[#5b21b6] shadow-sm transition-all">
+          {t('createProduct') || 'Create Product'}
         </button>
       </div>
 
-      <CreateTaskModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={() => {
-          // Refresh tasks list
-          fetchTasks();
-        }}
-      />
-
-      <EditTaskModal
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedTask(null);
-        }}
-        onSuccess={() => {
-          fetchTasks();
-        }}
-        task={selectedTask}
-      />
-
-      {/* Filters */}
-      <div className="p-4 md:p-6 border-b border-gray-200">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-            <label className="text-sm font-medium whitespace-nowrap">{t('productName')} :</label>
+      {/* Filter Section */}
+      <div className="w-full mx-auto px-6 mb-8">
+        <div className="flex flex-wrap items-center justify-baseline gap-x-24 gap-y-4 mb-6">
+          {/* Product Name Filter */}
+          <div className="flex items-center gap-3">
+            <label className="text-gray-700 text-sm">{t('productName') || 'Product Name'} :</label>
             <input
               type="text"
               value={filters.productName}
               onChange={(e) => setFilters({ ...filters, productName: e.target.value })}
-              className="w-full sm:w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]"
+              className="w-44 bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-sm"
             />
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-            <label className="text-sm font-medium whitespace-nowrap">{t('productPrice')} :</label>
+
+          {/* Product Price Range Filter */}
+          <div className="flex items-center gap-3">
+            <label className="text-gray-700 text-sm">{t('productPrice') || 'Product Price'} :</label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
                 value={filters.priceFrom}
                 onChange={(e) => setFilters({ ...filters, priceFrom: e.target.value })}
-                className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]"
+                className="w-32 bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-sm"
               />
-              <span>-</span>
+              <span className="text-gray-400">-</span>
               <input
                 type="number"
                 value={filters.priceTo}
                 onChange={(e) => setFilters({ ...filters, priceTo: e.target.value })}
-                className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]"
+                className="w-32 bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-sm"
               />
             </div>
           </div>
         </div>
-        <div className="flex justify-center mt-4">
+
+        {/* Filter Action Button */}
+        <div className="flex justify-center pt-3 pb-5">
           <button 
             onClick={handleFilter}
-            disabled={loading}
-            className="w-full sm:w-auto px-8 md:px-16 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#6d28d9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            {loading ? t('loading') || 'Loading...' : t('filter')}
+            className="px-16 py-2 bg-[#6d28d9] text-white rounded-md font-medium hover:bg-[#5b21b6] transition-all shadow-md">
+            {t('filter') || 'Filter'}
           </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        {loading && tasks.length === 0 ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-gray-500">Loading...</div>
-          </div>
-        ) : (
-          <table className="w-full min-w-[800px]">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">#</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('productImage')}</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('productName')}</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('productPrice')}</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('productCode')}</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700"></th>
+      {/* 3. Table Section */}
+      <div className="w-full mx-auto bg-white rounded-sm shadow-sm overflow-hidden border-t border-gray-100">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">#</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productImage') || 'Product Image'}</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productName') || 'Product Name'}</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productPrice') || 'Product Price'}</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productCode') || 'Product Code'}</th>
+                <th className="px-6 py-4"></th>
               </tr>
             </thead>
-            <tbody>
-              {tasks.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
-                    No tasks found
+            <tbody className="divide-y divide-gray-50">
+              {tasks.map((task, index) => (
+                <tr key={task.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-6 text-sm text-gray-600">{task.id || (index + 1)}</td>
+                  <td className="px-6 py-4">
+                    <img 
+                      src={task.imageUrl || "/placeholder-logo.png"} 
+                      alt={task.name}
+                      className="h-10 w-24 object-contain"
+                    />
                   </td>
-                </tr>
-              ) : (
-                tasks.map((task) => (
-                  <tr key={task.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-600">{task.id}</td>
-                <td className="px-6 py-4">
-                  <img 
-                    src={task.imageUrl} 
-                    alt={task.name}
-                    className="w-16 h-16 object-contain"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/64?text=IMG';
-                    }}
-                  />
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900 font-medium">{task.name}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{task.taskValue}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{task.code}</td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
+                  <td className="px-6 py-4 text-sm text-gray-700 font-medium uppercase">{task.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 font-semibold">{task.taskValue}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 font-mono">{task.code || 'N/A'}</td>
+                  <td className="px-6 py-4 text-right">
                     <button 
                       onClick={() => {
                         setSelectedTask(task);
                         setIsEditModalOpen(true);
                       }}
-                      className="p-2 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white rounded transition-colors"
-                      title={t('edit') || 'Edit'}
-                    >
-                      <Edit size={20} />
+                      className="p-2 text-[#6d28d9] hover:bg-purple-50 rounded-full">
+                      <Settings size={20} />
                     </button>
-                    <button 
-                      onClick={() => handleDeleteTask(task.id)}
-                      className="p-2 text-red-500 hover:bg-red-500 hover:text-white rounded transition-colors"
-                      title={t('delete') || 'Delete'}
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </div>
-                </td>
-                  </tr>
-                ))
-              )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
-        )}
+        </div>
       </div>
+
+      {/* Modals */}
+      <CreateTaskModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSuccess={fetchTasks} />
+      {selectedTask && (
+        <EditTaskModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} task={selectedTask} onSuccess={fetchTasks} />
+      )}
     </div>
   );
 };
 
 export default TaskManagement;
-
