@@ -55,14 +55,6 @@ const VIPLevelManagement = () => {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-      {/* Header with Create Button */}
-      <div className="flex justify-end p-4 border-b border-gray-200">
-        <button 
-          onClick={handleCreate}
-          className="px-6 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#6d28d9] transition-colors">
-          {t('createVIPLevel') || 'Create VIP Level'}
-        </button>
-      </div>
 
       <VIPLevelModal
         isOpen={isModalOpen}
@@ -86,10 +78,10 @@ const VIPLevelManagement = () => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 w-32">{t('vipLevel')}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">{t('taskSettings')}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">{t('withdrawalLimitation')}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 w-24"></th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700 w-32">{t('vipLevel')}</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">{t('taskSettings')}</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">{t('withdrawalLimitation')}</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700 w-24"></th>
               </tr>
             </thead>
             <tbody>
