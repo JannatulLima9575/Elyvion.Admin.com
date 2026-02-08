@@ -1,6 +1,20 @@
 import { useState, useEffect } from "react";
 
-const VIPLevelForm = ({ level, onClose, onSuccess }) => {
+/* ---------- Row Component (Label Left, Field Right) ---------- */
+const Row = ({ label, children }) => (
+  <div className="grid grid-cols-12 items-center gap-6 py-3">
+    <label className="col-span-4 text-sm font-medium text-gray-700">
+      {label}
+    </label>
+    <div className="col-span-8">{children}</div>
+  </div>
+);
+
+const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
+
+  /* 🔥 prevents auto opening */
+  if (!isOpen) return null;
+
   const [formData, setFormData] = useState({
     ambassadorLevelName: "",
     cashBonusGiven: "",
@@ -16,6 +30,7 @@ const VIPLevelForm = ({ level, onClose, onSuccess }) => {
     withdrawalFees: "",
   });
 
+  /* Prefill data when editing */
   useEffect(() => {
     if (level) setFormData({ ...level });
   }, [level]);
@@ -28,7 +43,6 @@ const VIPLevelForm = ({ level, onClose, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // call API to update level
       console.log("Updated data:", formData);
       onSuccess();
       onClose();
@@ -38,148 +52,175 @@ const VIPLevelForm = ({ level, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-[600px] max-w-full p-6 relative">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl w-[720px] max-w-[95%] p-6 relative shadow-xl">
+
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+          className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
         >
           ✕
         </button>
-        <h2 className="text-2xl font-semibold mb-4">Edit VIP Level</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <h2 className="text-xl font-semibold mb-6">Edit VIP Level</h2>
 
-          {/* Basic Details */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-8 max-h-[70vh] overflow-y-auto pr-2"
+        >
+
+          {/* ---------- Basic Details ---------- */}
           <div>
-            <h3 className="font-medium mb-2">Basic Details</h3>
-            <div className="space-y-3">
+            <h3 className="font-semibold text-gray-800 border-b border-gray-300 pb-2 mb-2">
+              Basic Details
+            </h3>
+
+            <Row label="VIP Level Name">
               <input
                 type="text"
                 name="ambassadorLevelName"
-                placeholder="VIP Level Name"
                 value={formData.ambassadorLevelName}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
-                required
+                className="w-full border rounded-lg px-4 py-2"
               />
+            </Row>
+
+            <Row label="Min Amount">
               <input
                 type="number"
                 name="cashBonusGiven"
-                placeholder="Min Amount"
                 value={formData.cashBonusGiven}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
-                required
+                className="w-full border rounded-lg px-4 py-2"
               />
-            </div>
+            </Row>
           </div>
 
-          {/* Task Details */}
+          {/* ---------- Task Details ---------- */}
           <div>
-            <h3 className="font-medium mb-2">Task Details</h3>
-            <div className="space-y-3">
+            <h3 className="font-semibold text-gray-800 border-b border-gray-300 pb-2 mb-2">
+              Task Details
+            </h3>
+
+            <Row label="Daily Task Count">
               <input
                 type="number"
                 name="eachSetTaskNumber"
-                placeholder="Daily Task Count"
                 value={formData.eachSetTaskNumber}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border rounded-lg px-4 py-2"
               />
+            </Row>
+
+            <Row label="Daily Task Set">
               <input
                 type="number"
                 name="totalTaskSet"
-                placeholder="Daily Task Set"
                 value={formData.totalTaskSet}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border rounded-lg px-4 py-2"
               />
+            </Row>
 
-              {/* Product Range side by side */}
-              <div className="flex gap-2">
+            <Row label="Product Range %">
+              <div className="flex items-center gap-3">
                 <input
                   type="number"
                   name="taskPriceRangeFrom"
-                  placeholder="Product Range % From"
                   value={formData.taskPriceRangeFrom}
                   onChange={handleChange}
-                  className="w-1/2 border px-3 py-2 rounded"
+                  className="w-40 border rounded-lg px-4 py-2"
                 />
+                <span className="text-gray-500">To</span>
                 <input
                   type="number"
                   name="taskPriceRangeTo"
-                  placeholder="To"
                   value={formData.taskPriceRangeTo}
                   onChange={handleChange}
-                  className="w-1/2 border px-3 py-2 rounded"
+                  className="w-40 border rounded-lg px-4 py-2"
                 />
               </div>
+            </Row>
 
+            <Row label="Commission Percentage">
               <input
                 type="number"
                 name="incentivePercentage"
-                placeholder="Commission Percentage"
                 value={formData.incentivePercentage}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border rounded-lg px-4 py-2"
               />
+            </Row>
+
+            <Row label="Combo Commission Percentage">
               <input
                 type="number"
                 name="comboTaskIncentivePercentage"
-                placeholder="Combo Commission Percentage"
                 value={formData.comboTaskIncentivePercentage}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border rounded-lg px-4 py-2"
               />
-            </div>
+            </Row>
           </div>
 
-          {/* Withdrawal Details */}
+          {/* ---------- Withdrawal Details ---------- */}
           <div>
-            <h3 className="font-medium mb-2">Withdrawal Details</h3>
-            <div className="space-y-3">
+            <h3 className="font-semibold text-gray-800 border-b border-gray-300 pb-2 mb-2">
+              Withdrawal Details
+            </h3>
+
+            <Row label="Min Withdrawal Amount">
               <input
                 type="number"
                 name="minWithdrawalAmount"
-                placeholder="Min Withdrawal Amount"
                 value={formData.minWithdrawalAmount}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border rounded-lg px-4 py-2"
               />
+            </Row>
+
+            <Row label="Max Withdrawal Amount">
               <input
                 type="number"
                 name="maxWithdrawalAmount"
-                placeholder="Max Withdrawal Amount"
                 value={formData.maxWithdrawalAmount}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border rounded-lg px-4 py-2"
               />
+            </Row>
+
+            <Row label="Completed Task/Day To Withdraw">
               <input
                 type="number"
                 name="requiredTaskCountToWithdraw"
-                placeholder="Completed Task/Day To Withdraw"
                 value={formData.requiredTaskCountToWithdraw}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border rounded-lg px-4 py-2"
               />
+            </Row>
+
+            <Row label="Withdrawal Fees">
               <input
                 type="number"
                 name="withdrawalFees"
-                placeholder="Withdrawal Fees"
                 value={formData.withdrawalFees}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border rounded-lg px-4 py-2"
               />
-            </div>
+            </Row>
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-[#7c3aed] text-white py-2 rounded hover:bg-[#6d28d9] font-semibold"
-          >
-            Confirm Update VIP Level
-          </button>
+          {/* Submit */}
+          <div className="pt-4 justify-center flex">
+            <button
+              type="submit"
+              className="bg-[#7c3aed] text-white px-8 py-2 rounded-lg font-semibold hover:bg-[#6d28d9]"
+            >
+              Confirm Update VIP Level
+            </button>
+          </div>
+
         </form>
       </div>
     </div>
