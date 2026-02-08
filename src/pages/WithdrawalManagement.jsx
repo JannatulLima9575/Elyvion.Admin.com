@@ -8,35 +8,14 @@ const WithdrawalManagement = () => {
   const [loading, setLoading] = useState(true);
   const [withdrawals, setWithdrawals] = useState([]);
   const [filters, setFilters] = useState({
-    startDate: '2026-01-27',
-    endDate: '2026-02-03',
+    startDate: '2026-02-01',
+    endDate: '2026-02-08',
     loginUserName: '',
     code: '',
-    status: '1' // Default to Pending
+    status: '1'
   });
 
-  useEffect(() => {
-    const fetchWithdrawals = async () => {
-      try {
-        setLoading(true);
-        const response = await withdrawalService.getWithdrawals({
-          startDate: filters.startDate,
-          endDate: filters.endDate,
-          statusID: filters.status ? parseInt(filters.status) : undefined
-        });
-        const withdrawalsData = response?.data || response || [];
-        setWithdrawals(withdrawalsData);
-      } catch (error) {
-        console.error('Error fetching withdrawals:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWithdrawals();
-  }, [filters.startDate, filters.endDate, filters.status]);
-
-  const handleFilter = async () => {
+  const fetchWithdrawals = async () => {
     try {
       setLoading(true);
       const response = await withdrawalService.getWithdrawals({
@@ -47,10 +26,18 @@ const WithdrawalManagement = () => {
       const withdrawalsData = response?.data || response || [];
       setWithdrawals(withdrawalsData);
     } catch (error) {
-      console.error('Error filtering withdrawals:', error);
+      console.error('Error fetching withdrawals:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchWithdrawals();
+  }, []);
+
+  const handleFilter = () => {
+    fetchWithdrawals();
   };
 
   const formatDateTime = (dateStr) => {
@@ -62,218 +49,191 @@ const WithdrawalManagement = () => {
     }
   };
 
-  const handleApprove = async (id) => {
+  const handleStatusUpdate = async (id, statusID) => {
+    const action = statusID === 2 ? 'approve' : 'reject';
+    if (!window.confirm(`Are you sure you want to ${action} this withdrawal?`)) return;
+    
     try {
-      await withdrawalService.updateWithdrawalStatus(id, { statusID: 2 });
-      // Refresh withdrawals
-      const response = await withdrawalService.getWithdrawals({
-        startDate: filters.startDate,
-        endDate: filters.endDate,
-        statusID: filters.status ? parseInt(filters.status) : undefined
-      });
-      const withdrawalsData = response?.data || response || [];
-      setWithdrawals(withdrawalsData);
+      await withdrawalService.updateWithdrawalStatus(id, { statusID });
+      fetchWithdrawals();
     } catch (error) {
-      console.error('Error approving withdrawal:', error);
-      alert('Failed to approve withdrawal');
-    }
-  };
-
-  const handleReject = async (id) => {
-    try {
-      await withdrawalService.updateWithdrawalStatus(id, { statusID: 3 });
-      // Refresh withdrawals
-      const response = await withdrawalService.getWithdrawals({
-        startDate: filters.startDate,
-        endDate: filters.endDate,
-        statusID: filters.status ? parseInt(filters.status) : undefined
-      });
-      const withdrawalsData = response?.data || response || [];
-      setWithdrawals(withdrawalsData);
-    } catch (error) {
-      console.error('Error rejecting withdrawal:', error);
-      alert('Failed to reject withdrawal');
-    }
-  };
-
-  const getStatusColor = (statusID) => {
-    switch (statusID) {
-      case 1: return 'text-orange-500';
-      case 2: return 'text-green-500';
-      case 3: return 'text-red-500';
-      default: return 'text-gray-500';
-    }
-  };
-
-  const getStatusLabel = (statusID) => {
-    switch (statusID) {
-      case 1: return t('pending');
-      case 2: return t('approved');
-      case 3: return t('rejected');
-      default: return 'Unknown';
+      console.error(`Error ${action}ing withdrawal:`, error);
+      alert(`Failed to ${action} withdrawal`);
     }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-      {/* Filters */}
-      <div className="p-4 md:p-6 border-b border-gray-200">
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <label className="text-sm font-medium text-red-500 whitespace-nowrap">*{t('createdDate')} :</label>
-            <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
+    <div className="min-h-screen">
+      {/* 1. Filter Section */}
+      <div className="p-6">
+        <div className="flex flex-wrap items- justify-between gap-y-6 gap-x-10 mb-6 bg-transparent">
+          {/* Date Filter */}
+          <div className="flex items-center gap-3">
+            <label className="text-gray-700 text-sm font-medium">
+              <span className="text-red-500">*</span>{t('createdDate')} :
+            </label>
+            <div className="flex items-center gap-2">
               <input
                 type="date"
                 value={filters.startDate}
                 onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-                className="flex-1 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]"
+                className="border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white focus:outline-none shadow-sm"
               />
-              <span>-</span>
+              <span className="text-gray-400">-</span>
               <input
                 type="date"
                 value={filters.endDate}
                 onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-                className="flex-1 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]"
+                className="border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white focus:outline-none shadow-sm"
               />
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <label className="text-sm font-medium whitespace-nowrap">{t('loginUserName')} :</label>
+
+          {/* Login User Name Filter */}
+          <div className="flex items-center justify-end gap-3">
+            <label className="text-gray-700 text-sm font-medium">{t('loginUserName')} :</label>
             <input
               type="text"
               value={filters.loginUserName}
               onChange={(e) => setFilters({ ...filters, loginUserName: e.target.value })}
-              className="flex-1 w-full sm:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]"
+              className="w-44 border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white focus:outline-none shadow-sm"
             />
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <label className="text-sm font-medium whitespace-nowrap">{t('code')} :</label>
+
+          {/* Code Filter */}
+          <div className="flex items-center justify-start gap-3">
+            <label className="text-gray-700 text-sm font-medium">{t('code')} :</label>
             <input
               type="text"
               value={filters.code}
               onChange={(e) => setFilters({ ...filters, code: e.target.value })}
-              className="flex-1 w-full sm:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]"
+              className="w-44 border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white focus:outline-none shadow-sm"
             />
           </div>
-          <div className="flex justify-end">
-            <button 
-              onClick={handleFilter}
-              disabled={loading}
-              className="w-full sm:w-auto px-8 md:px-16 py-2 bg-[#7c3aed] text-white rounded-lg font-medium hover:bg-[#6d28d9] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              {loading ? t('loading') || 'Loading...' : t('filter')}
-            </button>
-          </div>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-          <label className="text-sm font-medium whitespace-nowrap">{t('status')} :</label>
-          <select
-            value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed] w-full sm:w-auto"
+
+        {/* Status and Filter Button */}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <label className="text-gray-700 text-sm font-medium">{t('status')} :</label>
+            <select
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              className="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none shadow-sm"
+            >
+              <option value="">{t('all')}</option>
+              <option value="1">{t('pending')}</option>
+              <option value="2">{t('approved')}</option>
+              <option value="3">{t('rejected')}</option>
+            </select>
+          </div>
+          
+          <button 
+            onClick={handleFilter}
+            disabled={loading}
+            className="px-16 py-2 bg-[#6d28d9] text-white flex justify-center rounded-md font-medium hover:bg-[#5b21b6] shadow-md disabled:opacity-50"
           >
-            <option value="">{t('all')}</option>
-            <option value="1">{t('pending')}</option>
-            <option value="2">{t('approved')}</option>
-            <option value="3">{t('rejected')}</option>
-          </select>
+            {loading ? t('loading') : t('filter')}
+          </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        {loading && withdrawals.length === 0 ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-gray-500">Loading...</div>
-          </div>
-        ) : (
-          <table className="w-full min-w-[1200px]">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{t('date')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{t('customer')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{t('admin')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{t('bankDetails')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{t('actualAmount')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{t('updatedBy')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">{t('setting')}</th>
+      {/* 2. Table Section */}
+      <div className="w-full bg-white rounded-md shadow-sm border-t border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-white">
+              <tr className="text-gray-600 text-[13px] font-bold border-b border-gray-100 uppercase tracking-wider">
+                <th className="px-6 py-4">{t('date')}</th>
+                <th className="px-6 py-4">{t('customer')}</th>
+                <th className="px-6 py-4">{t('admin')}</th>
+                <th className="px-6 py-4">{t('bankDetails')}</th>
+                <th className="px-6 py-4">{t('actualAmount')}</th>
+                <th className="px-6 py-4">{t('updatedBy')}</th>
+                <th className="px-6 py-4">{t('setting')}</th>
               </tr>
             </thead>
-            <tbody>
-              {withdrawals.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="px-4 py-8 text-center text-gray-500">
-                    No withdrawals found
+            <tbody className="divide-y divide-gray-50">
+              {withdrawals.map((withdrawal) => (
+                <tr key={withdrawal.id} className="hover:bg-gray-50 transition-colors align-top">
+                  {/* Date Column */}
+                  <td className="px-6 py-5">
+                    <div className="text-sm text-gray-800 mb-1">ID : {withdrawal.id}</div>
+                    <div className="text-xs text-gray-500">Created At {formatDateTime(withdrawal.createdDate)}</div>
+                  </td>
+
+                  {/* Customer Column */}
+                  <td className="px-6 py-5">
+                    <div className="text-[13px] space-y-1">
+                      <div><span className="text-gray-400">Code :</span> {withdrawal.numberCode}</div>
+                      <div className="font-medium text-gray-700">{withdrawal.clientName} ( {withdrawal.loginUserName} )</div>
+                      <div><span className="text-gray-400">Wallet Balance :</span> {withdrawal.assetBalance}</div>
+                      <div><span className="text-gray-400">Phone Number :</span> {withdrawal.customerPhoneNumber || ''}</div>
+                    </div>
+                  </td>
+
+                  {/* Admin Column */}
+                  <td className="px-6 py-5">
+                    <div className="text-[13px] space-y-1 text-gray-600">
+                      <div>Admin: <span className="text-gray-800">ADMIN</span></div>
+                      <div>By: <span className="text-gray-800">{withdrawal.referrerCustomerLoginUserName || 'N/A'}</span></div>
+                      <div className="text-gray-400 italic font-light">{t('recommend')}</div>
+                    </div>
+                  </td>
+
+                  {/* Bank Details Column */}
+                  <td className="px-6 py-5">
+                    <div className="text-[13px] space-y-1 text-gray-700">
+                      <div><span className="text-gray-400">Withdrawal Amount :</span> {withdrawal.amount}</div>
+                      <div><span className="text-gray-400">Bank Name :</span> {withdrawal.manualBankName || withdrawal.bankVendorName}</div>
+                      <div><span className="text-gray-400">Bank Account Holder :</span> {withdrawal.bankAccountHolderName}</div>
+                      <div><span className="text-gray-400">IBAN :</span> {withdrawal.secondBankAccountNumber}</div>
+                    </div>
+                  </td>
+
+                  {/* Actual Amount & Status Column */}
+                  <td className="px-6 py-5">
+                    <div className="text-sm">
+                      <div className="font-bold text-gray-800">{withdrawal.amount}</div>
+                      <div className={`font-semibold mt-1 ${
+                        withdrawal.statusID === 1 ? 'text-orange-400' : 
+                        withdrawal.statusID === 2 ? 'text-green-500' : 'text-red-500'
+                      }`}>
+                        {withdrawal.statusID === 1 ? 'Pending' : withdrawal.statusID === 2 ? 'Approved' : 'Rejected'}
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Updated By Column */}
+                  <td className="px-6 py-5 text-sm text-gray-500">
+                    {withdrawal.updatedBy || ''}
+                  </td>
+
+                  {/* Setting/Action Column */}
+                  <td className="px-6 py-5">
+                    {withdrawal.statusID === 1 && (
+                      <div className="flex flex-col gap-2">
+                        <button 
+                          onClick={() => handleStatusUpdate(withdrawal.id, 2)}
+                          className="bg-[#10b981] hover:bg-green-600 text-white text-[12px] font-bold py-1.5 px-6 rounded-md shadow-sm transition-all">
+                          {t('approve') || 'Approve'}
+                        </button>
+                        <button 
+                          onClick={() => handleStatusUpdate(withdrawal.id, 3)}
+                          className="bg-[#ef4444] hover:bg-red-600 text-white text-[12px] font-bold py-1.5 px-6 rounded-md shadow-sm transition-all">
+                          {t('reject') || 'Reject'}
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
-              ) : (
-                withdrawals.map((withdrawal) => (
-                  <tr key={withdrawal.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="px-4 py-4">
-                  <div className="text-sm">
-                    <div className="font-medium">ID : {withdrawal.id}</div>
-                    <div className="text-gray-500">Created At {formatDateTime(withdrawal.createdDate)}</div>
-                  </div>
-                </td>
-                <td className="px-4 py-4">
-                  <div className="text-sm space-y-1">
-                    <div><span className="text-gray-500">Code :</span> {withdrawal.numberCode}</div>
-                    <div>{withdrawal.clientName} ( {withdrawal.loginUserName} )</div>
-                    <div><span className="text-gray-500">Wallet Balance :</span> {withdrawal.assetBalance}</div>
-                    <div><span className="text-gray-500">Phone Number :</span> {withdrawal.customerPhoneNumber || ''}</div>
-                  </div>
-                </td>
-                <td className="px-4 py-4">
-                  <div className="text-sm space-y-1">
-                    <div><span className="text-gray-500">Admin:</span> ADMIN</div>
-                    <div><span className="text-gray-500">By:</span> {withdrawal.referrerCustomerLoginUserName}</div>
-                    <div className="text-gray-500">{t('recommend')}</div>
-                  </div>
-                </td>
-                <td className="px-4 py-4">
-                  <div className="text-sm space-y-1">
-                    <div><span className="text-gray-500">{t('withdrawalAmount')} :</span> {withdrawal.amount}</div>
-                    <div><span className="text-gray-500">{t('bankName')} :</span> {withdrawal.manualBankName || withdrawal.bankVendorName}</div>
-                    <div><span className="text-gray-500">{t('bankAccountHolder')} :</span> {withdrawal.bankAccountHolderName}</div>
-                    <div><span className="text-gray-500">{t('iban')} :</span> {withdrawal.secondBankAccountNumber}</div>
-                  </div>
-                </td>
-                <td className="px-4 py-4">
-                  <div className="text-sm">
-                    <div className="font-medium">{withdrawal.amount}</div>
-                    <div className={`${getStatusColor(withdrawal.statusID)} font-medium`}>
-                      {getStatusLabel(withdrawal.statusID)}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-600">
-                  {withdrawal.updatedBy || ''}
-                </td>
-                <td className="px-4 py-4">
-                  {withdrawal.statusID === 1 && (
-                    <div className="flex flex-col gap-2">
-                      <button 
-                        onClick={() => handleApprove(withdrawal.id)}
-                        className="px-6 py-1.5 bg-green-500 text-white text-sm rounded font-medium hover:bg-green-600">
-                        {t('approve')}
-                      </button>
-                      <button 
-                        onClick={() => handleReject(withdrawal.id)}
-                        className="px-6 py-1.5 bg-red-500 text-white text-sm rounded font-medium hover:bg-red-600">
-                        {t('reject')}
-                      </button>
-                    </div>
-                  )}
-                </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
-        )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default WithdrawalManagement;
-
