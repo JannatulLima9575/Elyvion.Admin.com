@@ -54,12 +54,12 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div className="">
       {/* Filters */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-red-500 whitespace-nowrap">*{t('createdDate')} :</label>
+            <label className="text-sm font-medium text-gray-600 whitespace-nowrap">*{t('createdDate')} :</label>
             <input
               type="date"
               value={filters.startDate}
@@ -91,7 +91,7 @@ const UserManagement = () => {
           </div>
         ) : (
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-white border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('createdDate')}</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('adminName')}</th>
