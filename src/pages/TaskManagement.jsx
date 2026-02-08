@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { taskService } from '../services/taskService';
 import CreateTaskModal from '../components/CreateTaskModal';
 import EditTaskModal from '../components/EditTaskModal';
-import { Trash2, Edit } from 'lucide-react';
+import { Trash2, Edit, Settings } from 'lucide-react'; 
 
 const TaskManagement = () => {
   const { t } = useLanguage();
@@ -39,17 +39,15 @@ const TaskManagement = () => {
     if (!window.confirm(t('confirmDelete') || 'Are you sure you want to delete this task?')) {
       return;
     }
-
     try {
       await taskService.deleteTask(id);
-      fetchTasks(); // Refresh list
+      fetchTasks();
     } catch (error) {
       console.error('Error deleting task:', error);
-      alert(error.message || 'Failed to delete task');
     }
   };
 
-  const handleFilter = async () => {
+   const handleFilter = async () => {
     try {
       setLoading(true);
       const response = await taskService.getTasklists({ limit: 20 });
@@ -89,19 +87,17 @@ const TaskManagement = () => {
 
       {/* Filter Section */}
       <div className="w-full mx-auto px-6 mb-8">
-        <div className="flex flex-wrap items-center justify-baseline gap-x-24 gap-y-4 mb-6">
-          {/* Product Name Filter */}
+        <div className="flex flex-wrap items-center justify-center gap-x-24 gap-y-4 mb-6">
           <div className="flex items-center gap-3">
             <label className="text-gray-700 text-sm">{t('productName') || 'Product Name'} :</label>
             <input
               type="text"
               value={filters.productName}
               onChange={(e) => setFilters({ ...filters, productName: e.target.value })}
-              className="w-44 bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-sm"
+              className="w-44 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none shadow-sm"
             />
           </div>
 
-          {/* Product Price Range Filter */}
           <div className="flex items-center gap-3">
             <label className="text-gray-700 text-sm">{t('productPrice') || 'Product Price'} :</label>
             <div className="flex items-center gap-2">
@@ -109,20 +105,19 @@ const TaskManagement = () => {
                 type="number"
                 value={filters.priceFrom}
                 onChange={(e) => setFilters({ ...filters, priceFrom: e.target.value })}
-                className="w-32 bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-sm"
+                className="w-32 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none shadow-sm"
               />
               <span className="text-gray-400">-</span>
               <input
                 type="number"
                 value={filters.priceTo}
                 onChange={(e) => setFilters({ ...filters, priceTo: e.target.value })}
-                className="w-32 bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-sm"
+                className="w-32 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none shadow-sm"
               />
             </div>
           </div>
         </div>
 
-        {/* Filter Action Button */}
         <div className="flex justify-center pt-3 pb-5">
           <button 
             onClick={handleFilter}
@@ -132,17 +127,17 @@ const TaskManagement = () => {
         </div>
       </div>
 
-      {/* 3. Table Section */}
+      {/* Table Section */}
       <div className="w-full mx-auto bg-white rounded-sm shadow-sm overflow-hidden border-t border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">#</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productImage') || 'Product Image'}</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productName') || 'Product Name'}</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productPrice') || 'Product Price'}</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productCode') || 'Product Code'}</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productImage')}</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productName')}</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productPrice')}</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">{t('productCode')}</th>
                 <th className="px-6 py-4"></th>
               </tr>
             </thead>
@@ -150,11 +145,11 @@ const TaskManagement = () => {
               {tasks.map((task, index) => (
                 <tr key={task.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-6 text-sm text-gray-600">{task.id || (index + 1)}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <img 
                       src={task.imageUrl || "/placeholder-logo.png"} 
                       alt={task.name}
-                      className="h-10 w-24 object-contain"
+                      className="h-10 w-24 object-contain mx-auto"
                     />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700 font-medium uppercase">{task.name}</td>
@@ -166,7 +161,7 @@ const TaskManagement = () => {
                         setSelectedTask(task);
                         setIsEditModalOpen(true);
                       }}
-                      className="p-2 text-[#6d28d9] hover:bg-purple-50 rounded-full">
+                      className="p-2 text-[#6d28d9] hover:bg-purple-50 rounded-full transition-colors">
                       <Settings size={20} />
                     </button>
                   </td>
@@ -177,10 +172,25 @@ const TaskManagement = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      <CreateTaskModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSuccess={fetchTasks} />
+      {/* --- MODALS SECTION --- */}
+      {/* Create Modal Render */}
+      <CreateTaskModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+        onSuccess={fetchTasks} 
+      />
+
+      {/* Edit Modal Render (Only when selectedTask is not null) */}
       {selectedTask && (
-        <EditTaskModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} task={selectedTask} onSuccess={fetchTasks} />
+        <EditTaskModal 
+          isOpen={isEditModalOpen} 
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedTask(null);
+          }} 
+          task={selectedTask} 
+          onSuccess={fetchTasks} 
+        />
       )}
     </div>
   );
