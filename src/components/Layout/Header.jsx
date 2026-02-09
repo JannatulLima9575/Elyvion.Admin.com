@@ -14,7 +14,7 @@ const Header = ({ onToggleSidebar }) => {
   };
 
   return (
-    <header className="h-24 bg-white  flex items-center justify-between pl-5 py-4  sticky top-0 z-50">
+    <header className="h-24 bg-white  flex items-center justify-between  py-4  sticky top-0 z-50">
       <div className="flex items-center gap-2 md:gap-4">
         <h1 className="text-lg md:text-xl font-bold text-gray-900 whitespace-nowrap">Account Backoffice</h1>
         <button 
