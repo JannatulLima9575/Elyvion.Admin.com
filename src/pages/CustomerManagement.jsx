@@ -5,8 +5,6 @@ import { format } from "date-fns";
 import { customerService } from "../services/customerService";
 import CreateCustomerModal from "../components/CreateCustomerModal";
 import EditCustomerModal from "../components/EditCustomerModal";
-
-import { Trash2, Edit } from "lucide-react";
 import CustomerTaskDetails from "./../customer/CustomerTaskDetails";
 
 const CustomerManagement = () => {
