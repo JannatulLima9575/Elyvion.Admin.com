@@ -32,6 +32,7 @@ const CustomerManagement = () => {
 
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [taskCustomer, setTaskCustomer] = useState(null);
+  const [taskTab, setTaskTab] = useState("all");
 
   // Fetch customers
   useEffect(() => {
@@ -631,23 +632,26 @@ const CustomerManagement = () => {
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex flex-col gap-2 min-w-[150px]">
-                          <button
-                            onClick={() => {
-                              setTaskCustomer(customer);
-                              setIsTaskModalOpen(true);
-                            }}
-                            className="px-4 py-1.5 bg-[#7c3aed] text-white text-sm rounded font-medium hover:bg-[#6d28d9] whitespace-nowrap"
-                          >
-                            {t("task")}
-                          </button>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => {
+                                setTaskCustomer(customer);
+                                setIsTaskModalOpen(true);
+                              }}
+                              className="px-4 py-1.5 bg-[#6d28d9] text-white text-sm rounded font-medium whitespace-nowrap"
+                            >
+                              {t("task")}
+                            </button>
 
-                          <button className="px-4 py-1.5 bg-[#7c3aed] text-white text-sm rounded font-medium hover:bg-[#6d28d9] whitespace-nowrap">
-                            {t("comboTask")}
-                          </button>
-                          <button className="px-4 py-1.5 bg-[#7c3aed] text-white text-sm rounded font-medium hover:bg-[#6d28d9] whitespace-nowrap">
+                            <button className="px-4 py-1.5 bg-[#6d28d9] text-white text-sm rounded font-medium whitespace-nowrap">
+                              {t("comboTask")}
+                            </button>
+                          </div>
+
+                          <button className="px-4 py-1.5 bg-[#6d28d9] text-white text-sm rounded font-medium  whitespace-nowrap">
                             {t("level")}
                           </button>
-                          <button className="px-4 py-1.5 bg-[#7c3aed] text-white text-sm rounded font-medium hover:bg-[#6d28d9] whitespace-nowrap">
+                          <button className="px-4 py-1.5 bg-[#6d28d9] text-white text-sm rounded font-medium whitespace-nowrap">
                             {t("editBalance")}
                           </button>
                           <button className="px-4 py-1.5 bg-[#f97316] text-white text-sm rounded font-medium hover:bg-[#ea580c] whitespace-nowrap">
@@ -707,6 +711,7 @@ const CustomerManagement = () => {
         open={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         customer={taskCustomer}
+        defaultTab={taskTab}
       />
     </div>
   );
