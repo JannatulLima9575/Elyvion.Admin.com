@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { vipService } from "../services/vipservice.mjs";
 
 /* ---------- Row Component (Label Left, Field Right) ---------- */
 const Row = ({ label, children }) => (
@@ -15,20 +16,22 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
   /* 🔥 prevents auto opening */
   if (!isOpen) return null;
 
-  const [formData, setFormData] = useState({
-    ambassadorLevelName: "",
-    cashBonusGiven: "",
-    eachSetTaskNumber: "",
-    totalTaskSet: "",
-    taskPriceRangeFrom: "",
-    taskPriceRangeTo: "",
-    incentivePercentage: "",
-    comboTaskIncentivePercentage: "",
-    minWithdrawalAmount: "",
-    maxWithdrawalAmount: "",
-    requiredTaskCountToWithdraw: "",
-    withdrawalFees: "",
-  });
+const [formData, setFormData] = useState({
+  level: level?.level || "",                              // ambassadorLevelName → level
+  minAmount: level?.minAmount || "",                     // cashBonusGiven → minAmount
+  taskCount: level?.taskCount || "",                     // eachSetTaskNumber → taskCount
+  taskSet: level?.taskSet || "",                         // totalTaskSet → taskSet
+  commissionPercentage: level?.commissionPercentage || "",          // incentivePercentage
+  comboCommissionPercentage: level?.comboCommissionPercentage || "", // comboTaskIncentivePercentage
+  productRangeMinPercent: level?.productRangeMinPercent || "",
+  productRangeMaxPercent: level?.productRangeMaxPercent || "",
+  minWithdrawalAmount: level?.minWithdrawalAmount || "",
+  maxWithdrawalAmount: level?.maxWithdrawalAmount || "",
+  completedTasksPerDayToWithdraw: level?.completedTasksPerDayToWithdraw || "", // requiredTaskCountToWithdraw
+  withdrawalFeesPercent: level?.withdrawalFeesPercent || "",               // withdrawalFees
+});
+
+  const [loading, setLoading] = useState(true);
 
   /* Prefill data when editing */
   useEffect(() => {
@@ -42,10 +45,27 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      console.log("Updated data:", formData);
+      try {
+      setLoading(true);
+      const newData = Object.fromEntries(
+        Object.entries(formData).map(([key, value]) => {
+          // যদি value number type এ convert করা যায়, convert করো
+          const numValue = Number(value);
+          return [key, isNaN(numValue) ? value : numValue];
+        })
+      );
+      console.log("form",newData);
+      
+      const response = await vipService.updateLevel(newData, level.id);
+      console.log("Updated data:", newData);
       onSuccess();
       onClose();
+    } catch (error) {
+      console.error('Error fetching VIP levels:', error);
+    } finally {
+      setLoading(false);
+    }
+    try {
     } catch (error) {
       console.error("Update failed:", error);
     }
@@ -79,8 +99,8 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
             <Row label="VIP Level Name">
               <input
                 type="text"
-                name="ambassadorLevelName"
-                value={formData.ambassadorLevelName}
+                name="level"
+                value={formData.level}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2"
               />
@@ -89,8 +109,8 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
             <Row label="Min Amount">
               <input
                 type="number"
-                name="cashBonusGiven"
-                value={formData.cashBonusGiven}
+                name="minAmount"
+                value={formData.minAmount}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2"
               />
@@ -106,8 +126,8 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
             <Row label="Daily Task Count">
               <input
                 type="number"
-                name="eachSetTaskNumber"
-                value={formData.eachSetTaskNumber}
+                name="taskCount"
+                value={formData.taskCount}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2"
               />
@@ -116,8 +136,8 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
             <Row label="Daily Task Set">
               <input
                 type="number"
-                name="totalTaskSet"
-                value={formData.totalTaskSet}
+                name="taskSet"
+                value={formData.taskSet}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2"
               />
@@ -127,16 +147,16 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
               <div className="flex items-center gap-3">
                 <input
                   type="number"
-                  name="taskPriceRangeFrom"
-                  value={formData.taskPriceRangeFrom}
+                  name="productRangeMinPercent"
+                  value={formData.productRangeMinPercent}
                   onChange={handleChange}
                   className="w-40 border rounded-lg px-4 py-2"
                 />
                 <span className="text-gray-500">To</span>
                 <input
                   type="number"
-                  name="taskPriceRangeTo"
-                  value={formData.taskPriceRangeTo}
+                  name="productRangeMaxPercent"
+                  value={formData.productRangeMaxPercent}
                   onChange={handleChange}
                   className="w-40 border rounded-lg px-4 py-2"
                 />
@@ -146,8 +166,8 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
             <Row label="Commission Percentage">
               <input
                 type="number"
-                name="incentivePercentage"
-                value={formData.incentivePercentage}
+                name="commissionPercentage"
+                value={formData.commissionPercentage}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2"
               />
@@ -156,8 +176,8 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
             <Row label="Combo Commission Percentage">
               <input
                 type="number"
-                name="comboTaskIncentivePercentage"
-                value={formData.comboTaskIncentivePercentage}
+                name="comboCommissionPercentage"
+                value={formData.comboCommissionPercentage}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2"
               />
@@ -193,8 +213,8 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
             <Row label="Completed Task/Day To Withdraw">
               <input
                 type="number"
-                name="requiredTaskCountToWithdraw"
-                value={formData.requiredTaskCountToWithdraw}
+                name="completedTasksPerDayToWithdraw"
+                value={formData.completedTasksPerDayToWithdraw}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2"
               />
@@ -203,8 +223,8 @@ const VIPLevelForm = ({ isOpen, level, onClose, onSuccess }) => {
             <Row label="Withdrawal Fees">
               <input
                 type="number"
-                name="withdrawalFees"
-                value={formData.withdrawalFees}
+                name="withdrawalFeesPercent"
+                value={formData.withdrawalFeesPercent}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2"
               />

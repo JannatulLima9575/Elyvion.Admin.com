@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { masterDataService } from '../services/masterDataService';
-import { Trash2 } from 'lucide-react';
 import VIPLevelForm from './VIPLevelForm';
+import { vipService } from '../services/vipservice.mjs';
 
 const VIPLevelManagement = () => {
   const { t } = useLanguage();
@@ -15,11 +14,11 @@ const VIPLevelManagement = () => {
   const fetchLevels = async () => {
     try {
       setLoading(true);
-      const response = await masterDataService.getAmbassadorLevels();
+      const response = await vipService.getLevels();
       const levelsData = response?.data || response || [];
       setLevels(levelsData);
     } catch (error) {
-      console.error('Error fetching ambassador levels:', error);
+      console.error('Error fetching VIP levels:', error);
     } finally {
       setLoading(false);
     }
@@ -34,24 +33,6 @@ const VIPLevelManagement = () => {
     setIsModalOpen(true);
   };
 
-  const handleCreate = () => {
-    setSelectedLevel(null);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteLevel = async (id) => {
-    if (!window.confirm(t('confirmDelete') || 'Are you sure you want to delete this VIP level?')) {
-      return;
-    }
-
-    try {
-      await masterDataService.deleteAmbassadorLevel(id);
-      fetchLevels(); // Refresh list
-    } catch (error) {
-      console.error('Error deleting VIP level:', error);
-      alert(error.message || 'Failed to delete VIP level');
-    }
-  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -95,17 +76,17 @@ const VIPLevelManagement = () => {
                 levels.map((level) => (
               <tr key={level.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="px-6 py-6 text-sm font-semibold text-gray-900">
-                  {level.ambassadorLevelName}
+                  {`VIP ${level.level}`}
                 </td>
                 <td className="px-6 py-6">
                   <div className="text-sm space-y-1 text-gray-600">
-                    <div><span className="text-[#7c3aed]">{t('minAmount')}:</span> {level.cashBonusGiven}</div>
-                    <div><span className="text-[#7c3aed]">{t('taskCount')}:</span> {level.eachSetTaskNumber}</div>
-                    <div><span className="text-[#7c3aed]">{level.totalTaskSet}Task Set</span></div>
-                    <div><span className="text-[#7c3aed]">{t('commissionPercentage')}:</span> {level.incentivePercentage}</div>
-                    <div><span className="text-[#7c3aed]">{t('comboCommissionPercentage')}:</span> {level.comboTaskIncentivePercentage}</div>
+                    <div><span className="text-[#7c3aed]">{t('minAmount')}:</span> {level.minAmount}</div>
+                    <div><span className="text-[#7c3aed]">{t('taskCount')}:</span> {level.taskCount}</div>
+                    <div><span className="text-[#7c3aed]">{level.taskSet}Task Set</span></div>
+                    <div><span className="text-[#7c3aed]">{t('commissionPercentage')}:</span> {level.commissionPercentage}</div>
+                    <div><span className="text-[#7c3aed]">{t('comboCommissionPercentage')}:</span> {level.comboCommissionPercentage}</div>
                     <div>
-                      <span className="text-[#7c3aed]">{t('productRange')} %:</span> {level.taskPriceRangeFrom}% {t('productRange')} % {level.taskPriceRangeTo}%
+                      <span className="text-[#7c3aed]">{t('productRange')} %:</span> {level.productRangeMaxPercent}% {t('productRange')} % {level.productRangeMinPercent}%
                     </div>
                   </div>
                 </td>
@@ -113,8 +94,8 @@ const VIPLevelManagement = () => {
                   <div className="text-sm space-y-1 text-gray-600">
                     <div><span className="text-[#7c3aed]">{t('minWithdrawalAmount')}:</span> {level.minWithdrawalAmount}</div>
                     <div><span className="text-[#7c3aed]">{t('maxWithdrawalAmount')}:</span> {level.maxWithdrawalAmount}</div>
-                    <div><span className="text-[#7c3aed]">{t('completedTaskDayToWithdraw')}:</span> {level.requiredTaskCountToWithdraw}</div>
-                    <div><span className="text-[#7c3aed]">{t('withdrawalFees')}:</span> {level.withdrawalFees}%</div>
+                    <div><span className="text-[#7c3aed]">{t('completedTaskDayToWithdraw')}:</span> {level.completedTasksPerDayToWithdraw}</div>
+                    <div><span className="text-[#7c3aed]">{t('withdrawalFees')}:</span> {level.withdrawalFeesPercent}%</div>
                   </div>
                 </td>
                 <td className="px-6 py-6">
@@ -123,13 +104,6 @@ const VIPLevelManagement = () => {
                       onClick={() => handleEdit(level)}
                       className="px-6 py-2 bg-[#7c3aed] text-white text-sm rounded font-medium hover:bg-[#6d28d9] transition-colors">
                       {t('edit')}
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteLevel(level.id)}
-                      className="p-2 text-red-500 hover:bg-red-500 hover:text-white rounded transition-colors"
-                      title={t('delete') || 'Delete'}
-                    >
-                      <Trash2 size={20} />
                     </button>
                   </div>
                 </td>
