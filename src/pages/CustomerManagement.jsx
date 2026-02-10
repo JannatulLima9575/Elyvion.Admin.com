@@ -34,6 +34,7 @@ const CustomerManagement = () => {
       try {
         setLoading(true);
         const response = await customerService.getCustomers(filters);
+        console.log("customers response",response);
         const customersData = response?.data || response || [];
         setCustomers(customersData);
 
