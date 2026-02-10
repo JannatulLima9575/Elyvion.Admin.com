@@ -7,7 +7,7 @@ export default function CustomerTaskDetails({ open, onClose, customer, defaultTa
     setActiveTab(defaultTab || "all");
   }, [defaultTab]);
 
-  // if (!open) return null;
+  if (!open) return null;
 
   // MOCK DATA
   const allTasks = [
