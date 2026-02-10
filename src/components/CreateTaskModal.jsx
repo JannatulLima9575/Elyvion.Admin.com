@@ -33,7 +33,7 @@ const CreateTaskModal = ({ isOpen, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      // Jodi API file object dorkar hoy tobe ekhane FormData use korte paren
+      
       const submissionData = new FormData();
       submissionData.append('name', formData.name);
       submissionData.append('taskValue', formData.taskValue);
@@ -106,7 +106,7 @@ const CreateTaskModal = ({ isOpen, onClose, onSuccess }) => {
               />
             </div>
 
-            {/* Product Image Upload */}
+            {/* Image Upload */}
             <div className="flex items-start gap-4">
               <label className="text-gray-600 text-sm font-medium whitespace-nowrap w-32 pt-2">
                 {t('productImage') || 'Product Image'} :
@@ -121,7 +121,7 @@ const CreateTaskModal = ({ isOpen, onClose, onSuccess }) => {
               </div>
             </div>
 
-            {/* Image Preview Area */}
+            {/* Image Area */}
             <div className="flex items-center gap-4 h-24">
               <div className="w-32"></div>
               <div className="flex-1 h-full border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center overflow-hidden bg-gray-50">
