@@ -8,7 +8,7 @@ export default function UpdateAdminModal({ open, onClose, userData }) {
     telegramUrl3: "",
   });
 
-  // Modal open hole jodi existing data thake ta load korbe
+
   useEffect(() => {
     if (userData) {
       setFormData({
