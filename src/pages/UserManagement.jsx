@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Users, Key } from 'lucide-react';
 import { format } from 'date-fns';
-import { userService } from '../services/userService';
+import { adminService } from '../services/adminService.mjs';
+import { id } from 'date-fns/locale';
+import { useAuth } from '../context/AuthContext';
 
 const UserManagement = () => {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
+  const {user} = useAuth();
   const [filters, setFilters] = useState({
     startDate: '2026-02-02',
     endDate: '2026-02-03'
@@ -18,9 +21,13 @@ const UserManagement = () => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const response = await userService.getUsers({ limit: rowsPerPage });
+        const response = await adminService.getUsers({ limit: rowsPerPage,id: user?.id });
+        console.log("ress",response);
+        
         const usersData = response?.data || response || [];
-        setUsers(usersData);
+        console.log("userData",usersData);
+        
+        setUsers([usersData]);
       } catch (error) {
         console.error('Error fetching users:', error);
       } finally {
@@ -34,7 +41,7 @@ const UserManagement = () => {
   const handleFilter = async () => {
     try {
       setLoading(true);
-      const response = await userService.getUsers({ limit: rowsPerPage });
+      const response = await adminService.getUsers({ limit: rowsPerPage });
       const usersData = response?.data || response || [];
       setUsers(usersData);
     } catch (error) {
@@ -112,12 +119,12 @@ const UserManagement = () => {
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-600">{user.id}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 font-medium">{user.userName}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{user.waUrl || ''}</td>
-                <td className="px-6 py-4 text-sm text-blue-600">{user.telegramUrl || ''}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{user.telegramUrl2 || ''}</td>
-                <td className="px-6 py-4 text-sm text-gray-600">{user.telegramUrl3 || ''}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{new Date(user.createdAt).toLocaleDateString()}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 font-medium">{user.name}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{user.telegramUrl1 || ''}</td>
+                <td className="px-6 py-4 text-sm text-blue-600">{user.whatsappUrl || ''}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{user.whatsappUrl2 || ''}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{user.whatsappUrl3 || ''}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <button className="p-2 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white rounded transition-colors">
