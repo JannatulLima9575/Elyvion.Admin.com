@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { masterDataService } from '../services/masterDataService';
-import VIPLevelModal from '../components/VIPLevelModal';
 import { Trash2 } from 'lucide-react';
 import VIPLevelForm from './VIPLevelForm';
 

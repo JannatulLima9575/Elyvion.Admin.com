@@ -10,7 +10,7 @@ import {
   Crown 
 } from 'lucide-react';
 
-const Sidebar = ({ pendingWithdrawals = 203 }) => {
+const Sidebar = ({ pendingWithdrawals = 203,sidebarOpen }) => {
   const { t } = useLanguage();
   
   const menuItems = [
@@ -24,15 +24,15 @@ const Sidebar = ({ pendingWithdrawals = 203 }) => {
   ];
 
   return (
-    <aside className="w-[280px] scroll-arrow  mt-24 max-h-full overflow-auto bg-white  flex-shrink-0 h-full z-50">
-      <nav className="py-2 px-2">
+    <aside className={`${(sidebarOpen && sidebarOpen !=="int")  ? "w-[280px] ":`${sidebarOpen ==="int" ?"w-0  lg:w-[280px] ":' w-0  '}` }   transition-all duration-500 ease-in-out max-h-full  fixed  inset-y-0 left-0 z-50  scroll-arrow  mt-24 min-h-full hover:overflow-auto overflow-hidden bg-white  `}>
+      <nav className='py-2 px-2   overflow-hidden mb-24'>
         {menuItems.map((item) => (
          <>
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3  my-4 rounded-lg transition-all duration-200 ${
+              `  flex items-center gap-3 px-4 py-3  my-4 rounded-lg transition-all duration-200 ${
                 isActive 
                   ? 'bg-[#ede7f6] text-[#5e35b1]' 
                   : 'text-gray-700 hover:bg-gray-100'
