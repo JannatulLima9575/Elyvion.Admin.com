@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Users, Key } from 'lucide-react';
 import { format } from 'date-fns';
-import { userService } from '../services/userService';
+import { adminService } from '../services/adminService.mjs';
+import { id } from 'date-fns/locale';
+import { useAuth } from '../context/AuthContext';
 
 // Modal Components
 const UpdateAdminModal = ({ open, onClose, userData }) => {
@@ -71,7 +73,13 @@ const UserManagement = () => {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
+
   const [filters, setFilters] = useState({ startDate: '2026-02-02', endDate: '2026-02-03' });
+  const {user} = useAuth();
+  const [filters, setFilters] = useState({
+    startDate: '2026-02-02',
+    endDate: '2026-02-03'
+  });
   const [rowsPerPage, setRowsPerPage] = useState(100);
 
   // Modal States
@@ -82,9 +90,13 @@ const UserManagement = () => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const response = await userService.getUsers({ limit: rowsPerPage });
+        const response = await adminService.getUsers({ limit: rowsPerPage,id: user?.id });
+        console.log("ress",response);
+        
         const usersData = response?.data || response || [];
-        setUsers(usersData);
+        console.log("userData",usersData);
+        
+        setUsers([usersData]);
       } catch (error) {
         console.error('Error fetching users:', error);
       } finally {
@@ -99,6 +111,12 @@ const UserManagement = () => {
     try {
       const response = await userService.getUsers({ limit: rowsPerPage });
       setUsers(response?.data || response || []);
+      setLoading(true);
+      const response = await adminService.getUsers({ limit: rowsPerPage });
+      const usersData = response?.data || response || [];
+      setUsers(usersData);
+    } catch (error) {
+      console.error('Error filtering users:', error);
     } finally {
       setLoading(false);
     }
@@ -144,6 +162,41 @@ const UserManagement = () => {
                 <td className="px-6 py-4 text-sm text-blue-600">{user.telegramUrl}</td>
                 <td className="px-6 py-4 text-sm text-gray-600">{user.telegramUrl2}</td>
                 <td className="px-6 py-4 text-sm text-gray-600">{user.telegramUrl3}</td>
+
+      <div className="overflow-x-auto">
+        {loading && users.length === 0 ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-gray-500">Loading...</div>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-white border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('createdDate')}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('adminName')}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('whatsappUrl')}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('telegramUrl')}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('telegramUrl2')}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">{t('telegramUrl3')}</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
+                    No users found
+                  </td>
+                </tr>
+              ) : (
+                users.map((user) => (
+                  <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
+                <td className="px-6 py-4 text-sm text-gray-600">{new Date(user.createdAt).toLocaleDateString()}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 font-medium">{user.name}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{user.telegramUrl1 || ''}</td>
+                <td className="px-6 py-4 text-sm text-blue-600">{user.whatsappUrl || ''}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{user.whatsappUrl2 || ''}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{user.whatsappUrl3 || ''}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <button onClick={() => setUpdateModal({ open: true, user })} className="p-2 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white rounded transition-colors">
